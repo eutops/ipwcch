@@ -1,5 +1,5 @@
 ---
-title: "Simulation Benchmark for ipwCC"
+title: "Simulation Benchmark for ipwcch"
 author: "Charlotte Vavourakis"
 date: "`r Sys.Date()`"
 output:
@@ -29,7 +29,7 @@ library(kableExtra)
 library(here)
 library(patchwork)
 
-#library(ipwCC)  # functions under development
+#library(ipwcch)  # functions under development
 source(here::here("R", "simFullCohort.R"))
 source(here::here("R", "assignWeightsCch.R"))
 source(here::here("R", "weightedRoc.R"))
@@ -45,7 +45,7 @@ source(here::here("R", "plot.helpersRelRisk.R"))
 
 ## Goal
 
-Evaluate performance of `ipwCC` by comparing results from the full cohort with those obtained for the case-cohort with/without inverse probability of sample weights (IPW).
+Evaluate performance of `ipwcch` by comparing results from the full cohort with those obtained for the case-cohort with/without inverse probability of sample weights (IPW).
 
 ## Simulate full cohort with competing risk
 
@@ -57,7 +57,7 @@ lambda1 <- 0.00004 # Baseline hazard for main disease
 lambda2 <- 0.00002 # Baseline hazard for competing cause
 meanX <- 0   # Mean of the continuous disease marker
 sdX <- 1 # SD of continuous disease marker
-censoring <- "administrative" # For informative censoring IPCW is needed, not implemented by ipwCC. timeROC would be suitable for full cohort.
+censoring <- "administrative" # For informative censoring IPCW is needed, not implemented by ipwcch. timeROC would be suitable for full cohort.
 Tmax <- 3652.5 # Maximum 10 years follow up
 censor.rate <- NULL
 
@@ -213,7 +213,7 @@ sim_data$weight <- 1
 data.frame(
   Package = c("Time-dependent ROC", "AUC with CI", "Competing risks (*)", 
              "Case-cohort design (IPW)", "Informative censoring (IPCW **)"),
-  ipwCC = c("V", "V", "V", "V", "X"),
+  ipwcch = c("V", "V", "V", "V", "X"),
   timeROC = c("V", "V", "V", "X", "V"),
   survMarkerTwoPhase = c("V", "V", "X", "V", "V"),
   pROC = c("X", "V", "X", "X", "X")) %>%
@@ -238,7 +238,7 @@ The package timeROC includes an implementation for both definitions. <br>
 
 ### Benchmark
 
-* Compare (true) AUC calculated for the full cohort (timeROC), with estimates for the case-cohort obtained with timeROC (IPWC weighting) and ipwCC (IPW weighting):
+* Compare (true) AUC calculated for the full cohort (timeROC), with estimates for the case-cohort obtained with timeROC (IPWC weighting) and ipwcch (IPW weighting):
 
 ```{r, message = F, warning = F, fig.height = 8, fig.width = 15}
 
@@ -277,14 +277,14 @@ result.ci <- confint(object = test, level = 0.95, n.sim = 1000) %>% as.data.fram
 p2 <- plot_timeROC(test, result.ci, definition = 2, time_index = 2)
 p2 <- p2 + ggtitle("timeROC - case-cohort")
 
-# Estimates for the case-cohort using ipwCC, with IPC for sampling implemented: 
+# Estimates for the case-cohort using ipwcch, with IPC for sampling implemented: 
 marker = "X" # Biomarker predictive of disease
 event_code = 1 # Main disease
 
 test <- weightedRoc(sim_data_cch, t_eval = t_eval1, marker = marker, event_code = event_code)
 test_auc <- aucWithCI(sim_data_cch, t_eval = t_eval1, marker = marker, event_code = event_code, n_boot = 1000, seed = 42)
 p3 <- plot_ROC(test, test_auc)
-p3 <- p3 + ggtitle("ipwCC - case-cohort")
+p3 <- p3 + ggtitle("ipwcch - case-cohort")
 
 ```
 
@@ -320,14 +320,14 @@ result.ci <- confint(object = test, level = 0.95, n.sim = 1000) %>% as.data.fram
 p5 <- plot_timeROC(test, result.ci, definition = 2, time_index = 2)
 p5 <- p5 + ggtitle("timeROC - case-cohort")
 
-# Estimates for the case-cohort using ipwCC, with IPC for sampling implemented: 
+# Estimates for the case-cohort using ipwcch, with IPC for sampling implemented: 
 marker = "X" # Biomarker predictive of disease
 event_code = 1 # Main disease
 
 test <- weightedRoc(sim_data_cch, t_eval = t_eval2, marker = marker, event_code = event_code)
 test_auc <- aucWithCI(sim_data_cch, t_eval = t_eval2, marker = marker, event_code = event_code, n_boot = 1000, seed = 42)
 p6 <- plot_ROC(test, test_auc)
-p6 <- p6 + ggtitle("ipwCC - case-cohort")
+p6 <- p6 + ggtitle("ipwcch - case-cohort")
 
 # First, we calculate the true ROCs and AUCs from the full cohort at a given time using timeROC:
 test <- timeROC(T = cohort$time,
@@ -357,21 +357,21 @@ result.ci <- confint(object = test, level = 0.95, n.sim = 1000) %>% as.data.fram
 p8 <- plot_timeROC(test, result.ci, definition = 2, time_index = 2)
 p8 <- p8 + ggtitle("timeROC - case-cohort")
 
-# Estimates for the case-cohort using ipwCC, with IPC for sampling implemented: 
+# Estimates for the case-cohort using ipwcch, with IPC for sampling implemented: 
 marker = "X" # Biomarker predictive of disease
 event_code = 1 # Main disease
 
 test <- weightedRoc(sim_data_cch, t_eval = t_eval3, marker = marker, event_code = event_code)
 test_auc <- aucWithCI(sim_data_cch, t_eval = t_eval3, marker = marker, event_code = event_code, n_boot = 1000, seed = 42)
 p9 <- plot_ROC(test, test_auc)
-p9 <- p9 + ggtitle("ipwCC - case-cohort")
+p9 <- p9 + ggtitle("ipwcch - case-cohort")
 
 # Plot comparison
 (p1 + p2 + p3)/(p4 + p5 + p6)/(p7 + p8 + p9)
 
 ```
 
-* Compare (true) AUC calculated for the full cohort (timeROC), with estimates for the case-cohort obtained with timeROC (IPWC weighting) and ipwCC (IPW weighting) in the dataset with samples removed post case-cohort sampling. The ipwCC method should correctly account for this when sampling probabilities are replaced with effective sampling probabilities:
+* Compare (true) AUC calculated for the full cohort (timeROC), with estimates for the case-cohort obtained with timeROC (IPWC weighting) and ipwcch (IPW weighting) in the dataset with samples removed post case-cohort sampling. The ipwcch method should correctly account for this when sampling probabilities are replaced with effective sampling probabilities:
 
 ```{r, message = F, warning = F, fig.height = 8, fig.width = 15}
 
@@ -410,14 +410,14 @@ result.ci <- confint(object = test, level = 0.95, n.sim = 1000) %>% as.data.fram
 p2 <- plot_timeROC(test, result.ci, definition = 2, time_index = 2)
 p2 <- p2 + ggtitle("timeROC - case-cohort")
 
-# Estimates for the case-cohort using ipwCC, with IPC for sampling implemented: 
+# Estimates for the case-cohort using ipwcch, with IPC for sampling implemented: 
 marker = "X" # Biomarker predictive of disease
 event_code = 1 # Main disease
 
 test <- weightedRoc(sim_data_cch_missing, t_eval = t_eval1, marker = marker, event_code = event_code)
 test_auc <- aucWithCI(sim_data_cch_missing, t_eval = t_eval1, marker = marker, event_code = event_code, n_boot = 1000, seed = 42)
 p3 <- plot_ROC(test, test_auc)
-p3 <- p3 + ggtitle("ipwCC - case-cohort")
+p3 <- p3 + ggtitle("ipwcch - case-cohort")
 
 ```
 
@@ -453,14 +453,14 @@ result.ci <- confint(object = test, level = 0.95, n.sim = 1000) %>% as.data.fram
 p5 <- plot_timeROC(test, result.ci, definition = 2, time_index = 2)
 p5 <- p5 + ggtitle("timeROC - case-cohort")
 
-# Estimates for the case-cohort using ipwCC, with IPC for sampling implemented: 
+# Estimates for the case-cohort using ipwcch, with IPC for sampling implemented: 
 marker = "X" # Biomarker predictive of disease
 event_code = 1 # Main disease
 
 test <- weightedRoc(sim_data_cch_missing, t_eval = t_eval2, marker = marker, event_code = event_code)
 test_auc <- aucWithCI(sim_data_cch_missing, t_eval = t_eval2, marker = marker, event_code = event_code, n_boot = 1000, seed = 42)
 p6 <- plot_ROC(test, test_auc)
-p6 <- p6 + ggtitle("ipwCC - case-cohort")
+p6 <- p6 + ggtitle("ipwcch - case-cohort")
 
 # First, we calculate the true ROCs and AUCs from the full cohort at a given time using timeROC:
 test <- timeROC(T = cohort$time,
@@ -490,21 +490,21 @@ result.ci <- confint(object = test, level = 0.95, n.sim = 1000) %>% as.data.fram
 p8 <- plot_timeROC(test, result.ci, definition = 2, time_index = 2)
 p8 <- p8 + ggtitle("timeROC - case-cohort")
 
-# Estimates for the case-cohort using ipwCC, with IPC for sampling implemented: 
+# Estimates for the case-cohort using ipwcch, with IPC for sampling implemented: 
 marker = "X" # Biomarker predictive of disease
 event_code = 1 # Main disease
 
 test <- weightedRoc(sim_data_cch_missing, t_eval = t_eval3, marker = marker, event_code = event_code)
 test_auc <- aucWithCI(sim_data_cch_missing, t_eval = t_eval3, marker = marker, event_code = event_code, n_boot = 1000, seed = 42)
 p9 <- plot_ROC(test, test_auc)
-p9 <- p9 + ggtitle("ipwCC - case-cohort")
+p9 <- p9 + ggtitle("ipwcch - case-cohort")
 
 # Plot comparison
 (p1 + p2 + p3)/(p4 + p5 + p6)/(p7 + p8 + p9)
 
 ```
 
-* ipwCC also has a built-in function to compute AUC with CI over time:
+* ipwcch also has a built-in function to compute AUC with CI over time:
 
 ```{r, message = F, warning = F, fig.height = 4, fig.width = 8}
 
@@ -555,7 +555,7 @@ auc_t <- aucOverTime(sim_data_cch, times = times, marker = marker, event_code = 
 * Cause-specific hazards estimated using the Cox model (semi-parametric) or the Nelson-Aalen estimator (non-parametric) <br>
 * Cumulative incidence functions accounting for competing risks (transition probabilities estimated via the Aalen-Johansen estimator), either directly (non-parametric) or derived from Cox models (semi-parametric) <br>
 * Below is a demonstration of how to analyze a full cohort, the subcohort of the case-cohort or the full case-cohort using existing packages. <br>
-* ipwCC only has helper functions for displaying analysis results. <br>
+* ipwcch only has helper functions for displaying analysis results. <br>
 
 ### Example analyses
 
@@ -731,7 +731,7 @@ p1 + p2 + plot_layout(guides = "collect")
 * Cause-specific hazard ratios estimated using the Cox proportional hazards model (semi-parametric), stratified or smoothed Nelson-Aalen estimators or kernel-based methods (non-parametric) <br>
 * Subdistribution hazard ratios for competing risks estimated using the Fine-Gray model (semi-parametric) or group-specific cumulative incidence functions (non-parametric) <br>
 * Below we will test the effect of IPW for case-cohort analysis for semi-parametric cause-specific hazard ratio's <br>
-* ipwCC only has helper functions for displaying analysis results. <br>
+* ipwcch only has helper functions for displaying analysis results. <br>
 
 ### Benchmark
 
