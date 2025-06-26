@@ -1,0 +1,20 @@
+Package: ipwcch
+Type: Package
+Title: Time-to-Event ROC Analysis for Case-Cohort Designs
+Version: 0.1.0
+Author: Charlotte D. Vavourakis
+Maintainer: Charlotte D. Vavourakis <charlottevavourakis@gmail.com>
+Description: 
+    Provides statistical tools for evaluating prognostic biomarkers in prospective case-cohort study designs. 
+    Designed for survival outcomes and dynamic prediction in epidemiologic or clinical research settings.
+    Supports time-dependent ROC curve analysis and AUC with CI estimation using inverse probability weighting, accounting for possible competing events. 
+    Censoring is assumed to be administrative; inverse probability weighting for censoring is not currently implemented.
+    This package includes also plotting helper function to vizualize estimates of absolute and relative risks over time assessed with other packages.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.2
+Imports: 
+    dplyr,
+    ggplot2,
+    tidyr

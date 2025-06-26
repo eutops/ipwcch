@@ -1,0 +1,45 @@
+# R-specific
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+
+# R Markdown: ignore outputs
+*.utf8.md
+*.knit.md
+*.nb.html
+
+# R package build artifacts
+.DS_Store
+.Rcheck/
+*.tar.gz
+*.pdf
+man/*.html
+
+# RStudio and session files
+.Rhistory
+.RData
+.Ruserdata
+
+# Mac OS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Inst/simulations - ignore derived files
+inst/simulations/*.md
+inst/simulations/*_files/
+inst/simulations/*.html
+inst/simulations/*.log
+!inst/simulations/benchmark.md
+!inst/simulations/sanitychecking.md
+!inst/simulations/sanitychecking_v2.md
+
+# Ignore dev or output folders (if used)
+output/
+cache/
+tmp/
+*.log
